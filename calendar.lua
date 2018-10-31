@@ -7,12 +7,12 @@ local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 -- upvalues
-local CalendarCloseEvent = CalendarCloseEvent
-local CalendarGetDate = CalendarGetDate
-local CalendarGetEventInfo = CalendarGetEventInfo
-local CalendarGetNumDayEvents = CalendarGetNumDayEvents
-local CalendarOpenEvent = CalendarOpenEvent
-local CalendarSetAbsMonth = CalendarSetAbsMonth
+local CloseEvent = C_Calendar.CloseEvent
+local GetCurrentCalendarTime = C_DateAndTime.GetCurrentCalendarTime
+local EventCanEdit = C_Calendar.EventCanEdit
+local GetNumDayEvents = C_Calendar.GetNumDayEvents
+local OpenEvent = C_Calendar.OpenEvent
+local SetAbsMonth = C_Calendar.SetAbsMonth
 local EasyMenu = EasyMenu
 local OpenCalendar = OpenCalendar
 local format = format
@@ -57,8 +57,8 @@ local function formatDate(month, day, year)
   return dateString
 end
 
-local function getDate()
-  local _, month, day, year = CalendarGetDate()
+local function GetCurrentCalendarTime()
+  local _, month, day, year = C_DateAndTime.GetCurrentCalendarTime();
   return formatDate(month, day, year)
 end
 
@@ -86,7 +86,7 @@ local function populateOptions()
               get 	= function() return CalendarDB.format end,
               set 	= function(info, value)
                 CalendarDB.format = value
-                obj.text = getDate()
+                obj.text = GetCurrentCalendarTime()
               end,
             },
             divider2 = {
@@ -154,11 +154,11 @@ end
 
 local function populateEvents(day, month)
   -- today
-  local numEvents = CalendarGetNumDayEvents(0, day)
+  local numEvents = C_Calendar.GetNumDayEvents(monthOffset, day);
   if numEvents > 0 then
     local title, hour, minute, calendarType, sequenceType, inviteStatus, invitedBy
     for eventIndex = 1, numEvents do
-      title, hour, minute, calendarType, sequenceType, _, _, _, inviteStatus, invitedBy = CalendarGetDayEvent(0, day, eventIndex)
+      title, hour, minute, calendarType, sequenceType, _, _, _, inviteStatus, invitedBy = C_Calendar.GetNumDayEvents(0, day, eventIndex)
 
       if calendarType ~= 'RAID_LOCKOUT' and calendarType ~= 'RAID_RESET' and not (calendarType == 'HOLIDAY' and sequenceType == 'ONGOING') then
       	if calendarType == 'HOLIDAY' then
@@ -180,19 +180,19 @@ local function populateEvents(day, month)
   -- upcoming
   local numEvents, title, days
   local monthOffset = 0
-  local daysInMonth = select(3, CalendarGetMonth())
+  local daysInMonth = select(3, C_Calendar.GetMonthInfo())
   for dayOffset = 1, 7 do
     if day + dayOffset > daysInMonth then
       monthOffset = monthOffset + 1
       day = 1 - dayOffset
-      daysInMonth = select(3, CalendarGetMonth(monthOffset))
+      daysInMonth = select(3, C_Calendar.GetMonthInfo(monthOffset))
     end
 
-    numEvents = CalendarGetNumDayEvents(monthOffset, day + dayOffset)
+    numEvents = C_Calendar.GetNumDayEvents(monthOffset, day + dayOffset)
     if numEvents ~= 0 then
     	local title, hour, minute, calendarType, sequenceType, inviteStatus, invitedBy
       for eventIndex = 1, numEvents do
-        title, hour, minute, calendarType, sequenceType, _, _, _, inviteStatus, invitedBy = CalendarGetDayEvent(monthOffset, day + dayOffset, eventIndex)
+        title, hour, minute, calendarType, sequenceType, _, _, _, inviteStatus, invitedBy = C_Calendar.GetNumDayEvents(monthOffset, day + dayOffset, eventIndex)
 
         if calendarType == 'PLAYER' or
         (not upcomingEvents[title] and not todaysEvents[title] and calendarType ~= 'RAID_LOCKOUT' and calendarType ~= 'RAID_RESET' and not (calendarType == 'HOLIDAY' and sequenceType == 'ONGOING')) then
@@ -335,7 +335,7 @@ end
 function frame:ADDON_LOADED(addon)
 	if addon == "Blizzard_Calendar" or addon == "Blizzard_GuildUI" then
 		frame:UnregisterEvent("ADDON_LOADED")
-		obj.text = getDate()
+		obj.text = GetCurrentCalendarTime()
   	frame:CALENDAR_EVENTS()
 	end
 end
@@ -355,7 +355,7 @@ function frame:PLAYER_LOGIN()
 
   frame:UnregisterEvent('PLAYER_LOGIN')
 	if IsAddOnLoaded("Blizzard_Calendar") or IsAddOnLoaded("Blizzard_GuildUI") then
-  	obj.text = getDate()
+  	obj.text = GetCurrentCalendarTime()
   	frame:CALENDAR_EVENTS()
   else
   	local date_fmt = gsub(CalendarDB.format,'D','%%d')
@@ -376,7 +376,8 @@ function frame:CALENDAR_EVENTS(event,...)
 	wipe(todaysEvents)
   wipe(upcomingEvents)
 
-  local weekday, month, day, year = CalendarGetDate()
+  local date = C_Calendar.GetDate();
+  local wd,m,d,y = date.weekday, date.month, date.monthDay, date.year
   populateEvents(day, month)
 end
 
@@ -399,12 +400,12 @@ function obj.OnEnter(self)
   end
 
   tooltip = tip:Acquire('BrokerCalendarTooltip', 4, 'LEFT', 'RIGHT', 'RIGHT')
-  local weekday, month, day, year = CalendarGetDate()
+  local weekday, month, day, year = C_DateAndTime.GetCurrentCalendarTime()
 
   tooltip:AddHeader(
     color('Calendar', 'y'),
     '',
-    color(getDate(), 'y'),
+    color(GetCurrentCalendarTime(), 'y'),
     ''
   )
   tooltip:AddLine(' ')
