@@ -1,0 +1,68 @@
+1.3.4:
+  - update: updated for patch 7.1
+
+1.3.3:
+  - update: date format in the tooltip now matches the date format in LDB
+
+1.3.2:
+  - update: updated for patch 7.0.3
+
+1.3.1:
+  - update: updated for patch 6.0.3
+
+1.3:
+  - update: major usability update by Dridzt
+
+1.2.10:
+  - update: updated for patch 5.4
+
+1.2.9:
+  - update: updated for patch 5.3
+
+1.2.8:
+  - update: updated for patch 5.0.4
+
+1.2.7:
+  - feature: chinese (zhCN) and french (frFR) locales
+
+1.2.6:
+  - update: updated for patch 4.3
+
+1.2.5:
+  - update: updated for patch 4.1
+
+1.2.4:
+  - bugfix: fixed problems introduced in latest version
+
+1.2.3:
+  - feature: configurable date format
+
+1.2.2:
+  - feature: showing current date as a text next to the icon
+
+1.2.1:
+  - update: updated for patch 4.0.1
+
+1.2:
+  - update: reworked tooltip
+
+1.1.4:
+  - update: updated for patch 3.3
+
+1.1.3:
+  - bugfix: forgot to include zhTW locale file
+
+1.1.2:
+  - feature: chinese (zhTW) locale
+
+1.1.1:
+  - bugfix: errors, when sorting events
+
+1.1:
+  - feature: events are now sorted alphabetically
+  - feature: german (deDE) and korean (koKR) locales
+  - bugfix: better handling of new month in upcoming events
+  - bugfix: added better icon
+
+1.0:
+  - initial release
